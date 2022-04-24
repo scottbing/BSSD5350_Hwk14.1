@@ -13,6 +13,7 @@ public class ProceduralTerrain : MonoBehaviour
 
     Vector3[] vertices;
     Mesh mesh;
+    int[] triangles;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +24,11 @@ public class ProceduralTerrain : MonoBehaviour
         //uncomment the next 2 lines
         xWidth += 1;
         zDepth += 1;
+
+        mesh= new Mesh();
+        GetComponent<MeshFilter>().mesh = mesh;
         CreateGeometry();
+        UpdateMesh();
     }
 
     // Update is called once per frame
@@ -44,6 +49,17 @@ public class ProceduralTerrain : MonoBehaviour
                 verticeCounter++;
             }
         }
+        //triangles can only be defined after
+        // vertices since they point to vertices
+        triangles = new int[] { 0, 1, 2 };
+    }
+
+    public void UpdateMesh()
+    {
+        mesh.Clear();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
     }
 
     private void OnDrawGizmos()
