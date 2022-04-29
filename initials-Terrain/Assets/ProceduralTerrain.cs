@@ -32,7 +32,8 @@ public class ProceduralTerrain : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        CreateGeometry();
+        UpdateMesh();
     }
 
     void CreateGeometry() {
@@ -47,7 +48,13 @@ public class ProceduralTerrain : MonoBehaviour
         {
              for (int x = 0; x < xWidth; x++)
             {
-                vertices[verticeCounter] = new Vector3(x, 1.0f, z);     
+                //vertices[verticeCounter] = new Vector3(x, 1.0f, z);  
+                float yval = 1.0f;
+                //float perlinnoiseY = Mathf.PerlinNoise(x * .99f, z* .99f) * 1.1f;
+                float t = Time.timeSinceLevelLoad;
+                yval = Mathf.Sin(x + t * 0.5f) + 0.5f;
+
+                vertices[verticeCounter] = new Vector3(x, yval, z);
                 verticeCounter++;
             }
         }
@@ -60,12 +67,12 @@ public class ProceduralTerrain : MonoBehaviour
         {
             for (int x = 0; x < xWidth-1; x++)
             {
-                triangles[2 + trianglecount] = vertexcounter + 0; 
+                triangles[0 + trianglecount] = vertexcounter + 0; 
                 triangles[1 + trianglecount] = vertexcounter + xSquares + 1; 
-                triangles[0 + trianglecount] = vertexcounter + 1; 
-                triangles[5 + trianglecount] = vertexcounter + 1; 
+                triangles[2 + trianglecount] = vertexcounter + 1; 
+                triangles[3 + trianglecount] = vertexcounter + 1; 
                 triangles[4 + trianglecount] = vertexcounter + xSquares + 1; 
-                triangles[3 + trianglecount] = vertexcounter + xSquares + 2; 
+                triangles[5 + trianglecount] = vertexcounter + xSquares + 2; 
                 vertexcounter++;
                 trianglecount += 6;
             }
@@ -79,8 +86,13 @@ public class ProceduralTerrain : MonoBehaviour
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
+
+        mesh.RecalculateBounds();
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        meshCollider.sharedMesh = mesh;
     }
 
+    /*
     private void OnDrawGizmos()
     {
         if (vertices == null) return;
@@ -89,4 +101,5 @@ public class ProceduralTerrain : MonoBehaviour
             Gizmos.DrawSphere(vertices[i], .5f);
         }
     }
+    */
 }
